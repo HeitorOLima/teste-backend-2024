@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -23,7 +24,10 @@ func NewProducer(brokers []string, topic string) *KafkaProducer {
 		Topic:                  topic,
 		Balancer:               &kafka.LeastBytes{},
 		AllowAutoTopicCreation: true,
-		MaxAttempts:            5,
+		MaxAttempts:            10,
+		WriteTimeout:           10 * time.Second,
+		ReadTimeout:            10 * time.Second,
+		RequiredAcks:           kafka.RequireAll,
 	}
 	return &KafkaProducer{writer: writer}
 }
