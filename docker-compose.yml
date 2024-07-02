@@ -36,7 +36,18 @@ services:
       - 19000:9000
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
-
+  mongodb:
+    image: mongo:4.4
+    restart: always
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_DATABASE: teste_backend
+    ports:
+      - "27017:27017"
+    networks:
+        - mongo-database
+    volumes:
+      - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
   ms-rails:
     build:
       context: ./ms-rails/
@@ -56,14 +67,17 @@ services:
     container_name: ms_go_app
     depends_on:
       - kafka
+      - mongodb
     networks: 
       - broker-kafka
+      - mongo-database
     ports:
       - 3030:3030
-
+   
 
 
 networks: 
   broker-kafka:
     driver: bridge
-
+  mongo-database:
+    driver: bridge
