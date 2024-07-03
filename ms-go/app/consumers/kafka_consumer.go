@@ -10,14 +10,19 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+const (
+	CONSUMER_TOPIC    = "rails-to-go"
+	DEFAULT_PARTITION = 0
+	BROKER_ADDRESS    = "localhost:9092"
+)
+
 type KafkaConsumer struct {
 	Reader *kafka.Reader
 }
 
-func NewConsumer(brokers []string, groupID, topic string) *KafkaConsumer {
+func NewConsumer(brokers []string, topic string) *KafkaConsumer {
 	config := kafka.ReaderConfig{
 		Brokers:  brokers,
-		GroupID:  groupID,
 		Topic:    topic,
 		MaxBytes: 10e6,
 	}
@@ -27,9 +32,8 @@ func NewConsumer(brokers []string, groupID, topic string) *KafkaConsumer {
 	}
 }
 
-func (kc *KafkaConsumer) ConsumeMessages() {
+func (kc *KafkaConsumer) ReadMessages() {
 	for {
-
 		log.Printf("Buscando mensagens")
 		m, err := kc.Reader.ReadMessage(context.Background())
 		if err != nil {

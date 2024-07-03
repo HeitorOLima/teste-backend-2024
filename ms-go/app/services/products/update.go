@@ -2,8 +2,11 @@ package products
 
 import (
 	"context"
+	"encoding/json"
+	"log"
 	"ms-go/app/helpers"
 	"ms-go/app/models"
+	KafkaProducer "ms-go/app/producers"
 	"ms-go/db"
 	"net/http"
 	"time"
@@ -38,6 +41,14 @@ func Update(data models.Product, isAPI bool) (*models.Product, error) {
 	defer db.Disconnect()
 
 	if isAPI {
+		go func() {
+			var encodedData, _ = json.Marshal(data)
+			producer, err := KafkaProducer.NewProducer().WriteMessage(encodedData)
+			if err != nil {
+				log.Println(err)
+			}
+			producer.Close()
+		}()
 	}
 
 	return &product, nil
