@@ -3,9 +3,11 @@ package products
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"ms-go/app/helpers"
 	"ms-go/app/models"
 	KafkaProducer "ms-go/app/producers"
+
 	"ms-go/db"
 	"net/http"
 	"time"
@@ -44,11 +46,14 @@ func Create(data models.Product, isAPI bool) (*models.Product, error) {
 	defer db.Disconnect()
 
 	if isAPI {
-		producer := KafkaProducer.GetProducer()
-
-		var encodedData, _ = json.Marshal(data)
-		producer.ProduceMessage([]byte("go-to-rails"), encodedData)
+		go func() {
+			var encodedData, _ = json.Marshal(data)
+			producer, err := KafkaProducer.NewProducer().WriteMessage(encodedData)
+			if err != nil {
+				log.Println(err)
+			}
+			producer.Close()
+		}()
 	}
-
 	return &data, nil
 }

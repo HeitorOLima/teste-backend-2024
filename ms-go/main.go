@@ -5,30 +5,20 @@ import (
 	KafkaProducer "ms-go/app/producers"
 	_ "ms-go/db"
 	"ms-go/router"
-	"os"
-	"os/signal"
-	"syscall"
+	"time"
 )
 
 func main() {
 
-	consumer := KafkaConsumer.NewConsumer([]string{"kafka:29092"}, "iCasei-ms-go", "rails-to-go")
+	time.Sleep(time.Second * 10)
+
+	producer := KafkaProducer.NewProducer()
+	producer.Close()
+
+	consumer := KafkaConsumer.NewConsumer([]string{KafkaConsumer.BROKER_ADDRESS}, KafkaConsumer.CONSUMER_TOPIC)
 	defer consumer.Close()
 
-	go func() {
-		consumer.ConsumeMessages()
-	}()
+	go consumer.ReadMessages()
 
-	producer := KafkaProducer.GetProducer()
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		router.Run()
-	}()
-
-	<-sigs
-
-	producer.Close()
+	router.Run()
 }
