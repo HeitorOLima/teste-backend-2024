@@ -48,12 +48,7 @@ func (kc *KafkaConsumer) ReadMessages() {
 			continue
 		}
 
-		existingProduct, err := products.Details(product)
-		if err != nil {
-			log.Printf("Erro ao verificar existência do produto: %v", err)
-			continue
-		}
-
+		existingProduct, _ := products.Details(product)
 		if existingProduct != nil {
 			_, err := products.Update(product, false)
 			if err != nil {
