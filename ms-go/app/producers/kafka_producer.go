@@ -11,7 +11,7 @@ import (
 const (
 	PRODUCER_TOPIC    = "go-to-rails"
 	DEFAULT_PARTITION = 0
-	BROKER_ADDRESS    = "localhost:9092"
+	BROKER_ADDRESS    = "kafka:29092"
 )
 
 type Producer struct {

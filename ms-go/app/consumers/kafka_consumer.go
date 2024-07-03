@@ -13,7 +13,7 @@ import (
 const (
 	CONSUMER_TOPIC    = "rails-to-go"
 	DEFAULT_PARTITION = 0
-	BROKER_ADDRESS    = "localhost:9092"
+	BROKER_ADDRESS    = "kafka:29092"
 )
 
 type KafkaConsumer struct {
